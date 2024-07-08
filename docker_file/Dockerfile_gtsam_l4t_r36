@@ -42,7 +42,7 @@ RUN apt-get install -y htop
 RUN apt-get install -y build-essential
 
 
-# --- gtsam
+# --- gtsam ---
 RUN apt install -y zip
 RUN apt install -y libmetis-dev
 RUN cd /tmp && git clone https://github.com/borglab/gtsam.git && cd gtsam && git checkout 4.2a9
@@ -50,14 +50,14 @@ RUN cd /tmp/gtsam && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release
 # --- end of gtsam
 
 
-# --- PCL --- I face install dir problem, after colcon build, ros2 run complain libpcl_filter.so not found
+# --- PCL --- 
 RUN apt install -y libpcap-dev
 RUN apt install -y libusb-1.0-0-dev
 RUN cd /tmp && git clone https://github.com/PointCloudLibrary/pcl.git && cd pcl && git checkout pcl-1.14.1
 RUN cd /tmp/pcl && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr .. && make install -j$(nproc)
 # --- end of PCL
 
-# --- Serial lib
+# --- Serial lib ---
 COPY ./pkgs/serial-foxy.zip /tmp
 RUN bin/bash -c "cd /tmp && unzip serial-foxy.zip && source /opt/ros/humble/setup.bash && cd serial-foxy && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release .. && make install -j$(nproc)"
 
