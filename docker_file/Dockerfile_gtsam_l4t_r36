@@ -74,6 +74,12 @@ RUN apt install -y python3-colcon-common-extensions
 # fix map tool
 RUN apt install -y libfreeimage-dev
 
+#install GDB
+RUN apt install -y gdb
+
+#install apriltag
+RUN cd /tmp && git clone https://github.com/AprilRobotics/apriltag.git && cd apriltag && git checkout 3806edf38ac4400153677e510c9f9dcb81f472c8 && cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build --target install
+
 WORKDIR /root
 
 CMD ["bash"]
