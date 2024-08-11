@@ -80,6 +80,9 @@ RUN apt install -y gdb
 #install apriltag
 RUN cd /tmp && git clone https://github.com/AprilRobotics/apriltag.git && cd apriltag && git checkout 3806edf38ac4400153677e510c9f9dcb81f472c8 && cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build --target install
 
+#install can stuff for scout
+RUN apt install -y libasio-dev can-utils
+
 WORKDIR /root
 
 CMD ["bash"]
