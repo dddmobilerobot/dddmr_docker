@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/l4t-base:r36.2.0
+FROM nvcr.io/nvidia/l4t-jetpack:r36.4.0
 
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
@@ -46,7 +46,7 @@ RUN apt-get install -y build-essential
 RUN apt install -y zip
 RUN apt install -y libmetis-dev
 RUN cd /tmp && git clone https://github.com/borglab/gtsam.git && cd gtsam && git checkout 4.2a9
-RUN cd /tmp/gtsam && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DGTSAM_USE_SYSTEM_EIGEN=ON -DGTSAM_USE_SYSTEM_METIS=ON .. && make install -j$(nproc)
+RUN cd /tmp/gtsam && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DGTSAM_USE_SYSTEM_EIGEN=ON -DGTSAM_USE_SYSTEM_METIS=ON .. && make install -j$(($(nproc) - 2))
 # --- end of gtsam
 
 
@@ -54,7 +54,7 @@ RUN cd /tmp/gtsam && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release
 RUN apt install -y libpcap-dev
 RUN apt install -y libusb-1.0-0-dev
 RUN cd /tmp && git clone https://github.com/PointCloudLibrary/pcl.git && cd pcl && git checkout pcl-1.14.1
-RUN cd /tmp/pcl && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr .. && make install -j$(nproc)
+RUN cd /tmp/pcl && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr .. && make install -j$(($(nproc) - 2))
 # --- end of PCL
 
 # --- Serial lib ---
@@ -83,6 +83,23 @@ RUN cd /tmp && git clone https://github.com/AprilRobotics/apriltag.git && cd apr
 
 #install can stuff for scout
 RUN apt install -y libasio-dev can-utils
+
+#Semantic segmentation dependencies
+
+#install torch 2.5 and torchvision 0.20 and cudnn 9
+#see: https://forums.developer.nvidia.com/t/pytorch-and-torvision-version-issue-runtimeerror-operator-torchvision-nms-does-not-exist/312446
+#see: https://developer.nvidia.com/cudnn-downloads?target_os=Linux&target_arch=aarch64-jetson&Compilation=Native&Distribution=Ubuntu&target_version=22.04&target_type=deb_local
+RUN apt-get install -y python3-pip libopenblas-dev
+#see: https://developer.nvidia.com/cusparselt-downloads?target_os=Linux&target_arch=aarch64-jetson&Compilation=Native&Distribution=Ubuntu&target_version=22.04&target_type=deb_network
+RUN cd /tmp && wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/arm64/cuda-keyring_1.1-1_all.deb
+RUN /bin/bash -c "cd /tmp && dpkg -i cuda-keyring_1.1-1_all.deb && apt-get update && apt-get -y install libcusparselt0 libcusparselt-dev"
+RUN /bin/bash -c "cd /tmp && wget https://developer.download.nvidia.com/compute/cudnn/9.5.1/local_installers/cudnn-local-tegra-repo-ubuntu2204-9.5.1_1.0-1_arm64.deb"
+RUN /bin/bash -c "cd /tmp && dpkg -i cudnn-local-tegra-repo-ubuntu2204-9.5.1_1.0-1_arm64.deb"
+RUN /bin/bash -c "cd /tmp && cp /var/cudnn-local-tegra-repo-ubuntu2204-9.5.1/cudnn-*-keyring.gpg /usr/share/keyrings/"
+RUN /bin/bash -c "cd /tmp && apt update && apt-get -y install cudnn"
+RUN /bin/bash -c "cd /tmp && wget https://developer.download.nvidia.com/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl && python3 -m pip install --upgrade pip; python3 -m pip install numpy==1.26.1; python3 -m pip install --no-cache torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl"
+RUN /bin/bash -c "cd /tmp && git clone https://github.com/pytorch/vision.git && cd vision && git checkout v0.20.0 && python3 setup.py install"
+RUN pip3 install pycuda
 
 WORKDIR /root
 

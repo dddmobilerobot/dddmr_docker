@@ -4,7 +4,7 @@
 echo -n "Select image type (x64/l4t): " 
 read image_type
 
-if [ "$image_type" != "${image_type#[x64]}" ] ;then 
+if [[ $image_type == "x64" ]]; then 
     echo -n "Do you want to build image using cuda? (Y/N): " 
     read is_cuda
     if [ "$is_cuda" != "${is_cuda#[Yy]}" ] ;then 
@@ -18,11 +18,11 @@ else
     echo "----> Creating l4t image"
     echo -n "Select jetson version (r35/r36): " 
     read jetson_ver
-    if [ "$jetson_ver" != "${jetson_ver#[r35]}" ] ;then 
-        echo "----> Building r35 image"
+    if [[ $jetson_ver == "r35" ]]; then 
+        echo "----> Building r35.2.1 image"
         docker build -t dddmr_gtsam:l4t_r35 -f Dockerfile_gtsam_l4t_r35 .
     else
-        echo "----> Building r36 image"
+        echo "----> Building r36.4.0 image"
         docker build -t dddmr_gtsam:l4t_r36 -f Dockerfile_gtsam_l4t_r36 .
     fi
     

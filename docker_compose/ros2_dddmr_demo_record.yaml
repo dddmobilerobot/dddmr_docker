@@ -2,7 +2,7 @@ version: "3"
 
 services:
   dddmr_demo_specific_topic:
-    image: dddmr_gtsam:amd64
+    image: dddmr_gtsam:x64
     command: bash -c "source /root/dddmr/install/setup.bash && cd /root/dddmr && ros2 bag record /mapcloud /mapground /sub_mapcloud /sub_mapground /tf /tf_static /particles /robot_cuboid /global_path /best_trajectory /trajectory /odom /lslidar_point_cloud_voxel "
     network_mode: host
     privileged: true
@@ -21,7 +21,7 @@ services:
       #- "${HOME}/ros2_bags_record:/root/ros2_bags_record"
 
   dddmr_demo_record_realsense:
-    image: dddmr_gtsam:amd64
+    image: dddmr_gtsam:x64
     command: bash -c "cd /root/dddmr && gst-launch-1.0 v4l2src device=/dev/video4 ! queue ! videoscale ! video/x-raw, width=1920, height=1080, framerate=15/1 ! videoconvert ! x264enc ! flvmux ! filesink location=dddmr_realsense.mp4"
     network_mode: host
     privileged: true

@@ -10,12 +10,9 @@ docker run -it \
     --env="NVIDIA_DRIVER_CAPABILITIES=all"\
     --env="DISPLAY" \
     --env="QT_X11_NO_MITSHM=1" \
-    --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-    --volume="/usr/bin/tegrastats:/usr/bin/tegrastats" \
-    --volume="/usr/local/cuda-11.4:/usr/local/cuda-11.4" \
-    --volume="/usr/lib/aarch64-linux-gnu/tegra:/usr/lib/aarch64-linux-gnu/tegra" \
-    --volume="/lib/modules:/lib/modules" \
+    --volume="/tmp:/tmp" \
+    --volume="/dev:/dev" \
     --volume="${HOME}/dddmr:/root/dddmr_navigation" \
     --volume="${HOME}/dddmr_bags:/root/dddmr_bags" \
-    --name="dddmr_ros2_lt4_r35" \
-    dddmr_gtsam:l4t_r35
+    --name="dddmr_ros2_lt4_r36" \
+    dddmr_gtsam:l4t_r36

@@ -3,7 +3,7 @@ version: "3"
 services:
 
   dddmr_bagrecord:
-    image: dddmr_gtsam:amd64
+    image: dddmr_gtsam:x64
     command: bash -c "source /root/dddmr/install/setup.bash && cd /root/dddmr && ros2 bag record /lslidar_point_cloud /odom "
     network_mode: host
     privileged: true
@@ -22,7 +22,7 @@ services:
       #- "${HOME}/ros2_bags_record:/root/ros2_bags_record"
       
   dddmr_camerarecord:
-    image: dddmr_gtsam:amd64
+    image: dddmr_gtsam:x64
     command: bash -c "cd /root/dddmr && gst-launch-1.0 v4l2src device=/dev/video4 ! queue ! videoscale ! video/x-raw, width=1920, height=1080, framerate=15/1 ! videoconvert ! x264enc ! flvmux ! filesink location=dddmr.mp4"
     network_mode: host
     privileged: true
