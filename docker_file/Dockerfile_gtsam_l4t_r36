@@ -84,7 +84,10 @@ RUN cd /tmp && git clone https://github.com/AprilRobotics/apriltag.git && cd apr
 #install can stuff for scout
 RUN apt install -y libasio-dev can-utils
 
-#Semantic segmentation dependencies
+#-----Semantic segmentation dependencies-----
+
+#gst
+RUN apt install -y libgstreamer1.0-0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio
 
 #install torch 2.5 and torchvision 0.20 and cudnn 9
 #see: https://forums.developer.nvidia.com/t/pytorch-and-torvision-version-issue-runtimeerror-operator-torchvision-nms-does-not-exist/312446
@@ -100,6 +103,14 @@ RUN /bin/bash -c "cd /tmp && apt update && apt-get -y install cudnn"
 RUN /bin/bash -c "cd /tmp && wget https://developer.download.nvidia.com/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl && python3 -m pip install --upgrade pip; python3 -m pip install numpy==1.26.1; python3 -m pip install --no-cache torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl"
 RUN /bin/bash -c "cd /tmp && git clone https://github.com/pytorch/vision.git && cd vision && git checkout v0.20.0 && python3 setup.py install"
 RUN pip3 install pycuda
+
+#-----we have deep learning-----
+
+# intel realsense
+RUN apt install -y sudo ros-humble-diagnostic-updater
+RUN /bin/bash -c "cd /tmp && git clone https://github.com/IntelRealSense/librealsense.git && cd librealsense && git checkout e1688cc318457f7dd57abcdbedd3398062db3009"
+COPY bash/libuvc_installation.bash /tmp/librealsense/scripts
+RUN /bin/bash -c "cd /tmp/librealsense && chmod +x /tmp/librealsense/scripts/libuvc_installation.bash && ./scripts/libuvc_installation.bash"
 
 WORKDIR /root
 

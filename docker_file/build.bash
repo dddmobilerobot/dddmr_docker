@@ -16,15 +16,6 @@ if [[ $image_type == "x64" ]]; then
     fi
 else
     echo "----> Creating l4t image"
-    echo -n "Select jetson version (r35/r36): " 
-    read jetson_ver
-    if [[ $jetson_ver == "r35" ]]; then 
-        echo "----> Building r35.2.1 image"
-        docker build -t dddmr_gtsam:l4t_r35 -f Dockerfile_gtsam_l4t_r35 .
-    else
-        echo "----> Building r36.4.0 image"
-        docker build -t dddmr_gtsam:l4t_r36 -f Dockerfile_gtsam_l4t_r36 .
-    fi
-    
+    docker build -t dddmr_gtsam:l4t_r36 -f Dockerfile_gtsam_l4t_r36 .
 fi
 
