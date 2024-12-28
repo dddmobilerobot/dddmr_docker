@@ -9,7 +9,7 @@ if [[ $image_type == "x64" ]]; then
     read is_cuda
     if [ "$is_cuda" != "${is_cuda#[Yy]}" ] ;then 
         echo "----> Creating x64 image with cuda"
-        docker build -t dddmr_gtsam:12.4.1-cudnn-devel-ubuntu22.04 -f Dockerfile_gtsam_cuda .
+        docker build -t dddmr_gtsam:pytorch2.5.1-cuda12.4-cudnn9-tensorrt10.7 -f Dockerfile_gtsam_cuda .
     else
         echo "----> Creating x64 image without cuda"
         docker build -t dddmr_gtsam:x64 -f Dockerfile_gtsam .
