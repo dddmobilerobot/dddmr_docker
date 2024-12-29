@@ -108,7 +108,7 @@ RUN apt-get install -y tensorrt
 RUN python3 -m pip install --upgrade tensorrt
 #install cv2
 #TODO install customized opencv 
-RUN pip3 install opencv-python
+RUN pip3 install opencv-python matplotlib
 WORKDIR /root
 
 CMD ["bash"]
