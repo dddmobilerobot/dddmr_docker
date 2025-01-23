@@ -11,5 +11,5 @@ docker run -it \
     --volume="/dev:/dev" \
     --volume="${HOME}/dddmr:/root/dddmr_navigation" \
     --volume="${HOME}/dddmr_bags:/root/dddmr_bags" \
-    --name="dddmr_ros2_dev" \
+    --name="dddmr_humble_dev" \
     dddmr_gtsam:x64

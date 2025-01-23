@@ -18,8 +18,8 @@ if [ "$is_cuda" != "" ] ;then
         --volume="/tmp:/tmp" \
         --volume="${HOME}/dddmr_bags:/root/dddmr_bags" \
         --volume="${HOME}/dddmr_navigation:/root/dddmr_navigation" \
-        --name="dddmr_ros2_dev" \
-        dddmr_gtsam:12.4.1-cudnn-devel-ubuntu22.04
+        --name="dddmr_humble_dev" \
+        dddmr_gtsam:pytorch2.5.1-cuda12.6-cudnn9-tensorrt10.7
 elif [ "$is_x64" != "" ] ;then 
     docker run -it \
         --privileged \
@@ -30,7 +30,7 @@ elif [ "$is_x64" != "" ] ;then
         --volume="/tmp:/tmp" \
         --volume="${HOME}/dddmr_bags:/root/dddmr_bags" \
         --volume="${HOME}/dddmr_navigation:/root/dddmr_navigation" \
-        --name="dddmr_ros2_dev" \
+        --name="dddmr_humble_dev" \
         dddmr_gtsam:x64
 elif [ "$is_l4t_r36" != "" ] ;then 
     docker run -it \
@@ -45,7 +45,7 @@ elif [ "$is_l4t_r36" != "" ] ;then
         --volume="/tmp:/tmp" \
         --volume="${HOME}/dddmr_bags:/root/dddmr_bags" \
         --volume="${HOME}/dddmr_navigation:/root/dddmr_navigation" \
-        --name="dddmr_ros2_dev" \
+        --name="dddmr_humble_dev" \
         dddmr_gtsam:l4t_r36
 fi
 

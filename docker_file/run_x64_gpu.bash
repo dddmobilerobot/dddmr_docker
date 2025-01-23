@@ -12,7 +12,7 @@ docker run -it \
     --env="QT_X11_NO_MITSHM=1" \
     --volume="/tmp:/tmp" \
     --volume="/dev:/dev" \
-    --volume="${HOME}/dddmr:/root/dddmr_navigation" \
     --volume="${HOME}/dddmr_bags:/root/dddmr_bags" \
-    --name="dddmr_ros2_pytorch_tensorrt" \
-    dddmr_gtsam:pytorch2.5.1-cuda12.4-cudnn9-tensorrt10.7
+    --volume="${HOME}/dddmr:/root/dddmr_navigation" \
+    --name="dddmr_humble_cuda_dev" \
+    dddmr_gtsam:pytorch2.5.1-cuda12.6-cudnn9-tensorrt10.7

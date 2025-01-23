@@ -1,101 +1,32 @@
-#FROM ubuntu:22.04
-FROM pytorch/pytorch:2.5.1-cuda12.4-cudnn9-runtime
+FROM dddmr_gtsam:x64
 
-RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+#install cuda 12.6
+#see: https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=22.04&target_type=deb_local
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-ubuntu2204.pin
+RUN mv cuda-ubuntu2204.pin /etc/apt/preferences.d/cuda-repository-pin-600
+RUN /bin/bash -c "cd /tmp && wget https://developer.download.nvidia.com/compute/cuda/12.6.3/local_installers/cuda-repo-ubuntu2204-12-6-local_12.6.3-560.35.05-1_amd64.deb"
+RUN /bin/bash -c "cd /tmp && dpkg -i cuda-repo-ubuntu2204-12-6-local_12.6.3-560.35.05-1_amd64.deb"
+RUN /bin/bash -c "cd /tmp && cp /var/cuda-repo-ubuntu2204-12-6-local/cuda-*-keyring.gpg /usr/share/keyrings/"
+RUN /bin/bash -c "apt-get update"
+RUN /bin/bash -c "apt-get -y install cuda-toolkit-12-6"
 
-RUN apt-get update
+#install cudnn 9.6
+#see: https://developer.nvidia.com/cudnn-downloads?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=22.04&target_type=deb_local
+RUN /bin/bash -c "cd /tmp && wget https://developer.download.nvidia.com/compute/cudnn/9.6.0/local_installers/cudnn-local-repo-ubuntu2204-9.6.0_1.0-1_amd64.deb"
+RUN /bin/bash -c "cd /tmp && dpkg -i cudnn-local-repo-ubuntu2204-9.6.0_1.0-1_amd64.deb"
+RUN /bin/bash -c "cd /tmp && cp /var/cudnn-local-repo-ubuntu2204-9.6.0/cudnn-*-keyring.gpg /usr/share/keyrings/"
+RUN /bin/bash -c "apt-get update"
+RUN /bin/bash -c "apt-get -y install cudnn"
 
-RUN apt-get install -y apt-utils && apt-get install -y curl gnupg2 && apt-get install -y lsb-release && apt-get clean all
-
-
-# --- ROS2 Humble Installation
-RUN locale  # check for UTF-8
-
-RUN apt update && apt install -y locales
-RUN locale-gen en_US en_US.UTF-8
-RUN update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
-
-RUN echo "export LANG=en_US.UTF-8" >> /root/.bashrc
-
-RUN locale  # verify settings
-
-RUN apt install -y software-properties-common
-RUN add-apt-repository universe
-RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
-
-RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
-
-RUN apt-get update && apt-get install -y git
-
-RUN apt install -y ros-humble-desktop
-# --- Humble has been installed
-
-
-#install some tool
-RUN apt install -y nano openssh-server 
-#for ping hardware etc...
-RUN apt-get install -y iputils-ping
-#for ifconfig
-RUN apt-get install -y net-tools
-#for ifconfig
-RUN apt-get install -y htop
-RUN apt-get install -y build-essential
-
-
-# --- gtsam ---
-RUN apt install -y zip
-RUN apt install -y libmetis-dev
-RUN cd /tmp && git clone https://github.com/borglab/gtsam.git && cd gtsam && git checkout 4.2a9
-RUN cd /tmp/gtsam && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DGTSAM_USE_SYSTEM_EIGEN=ON -DGTSAM_USE_SYSTEM_METIS=ON .. && make install -j$(nproc)
-# --- end of gtsam
-
-# ---install cuda/cuda toolkit---
-#see: https://developer.nvidia.com/cuda-12-4-0-download-archive?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=22.04&target_type=deb_network
-RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
-RUN dpkg -i cuda-keyring_1.1-1_all.deb
-RUN apt-get update
-RUN apt-get -y install cuda-toolkit-12-4
-
-# --- PCL --- 
-RUN apt install -y libpcap-dev
-RUN apt install -y libusb-1.0-0-dev
-RUN cd /tmp && git clone https://github.com/PointCloudLibrary/pcl.git && cd pcl && git checkout pcl-1.14.1
-RUN cd /tmp/pcl && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr .. && make install -j$(nproc)
-# --- end of PCL
-
-# Install pip
-RUN apt install -y python3-pip
-
-# --- Serial lib ---
-COPY ./pkgs/serial-foxy.zip /tmp
-RUN pip3 install catkin_pkg
-RUN /bin/bash -c "cd /tmp && unzip serial-foxy.zip && source /opt/ros/humble/setup.bash && cd serial-foxy && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release .. && make install -j$(nproc)"
-
-RUN apt update
-
-RUN apt install -y libopencv-dev python3-opencv
-
-# Install colcon
-RUN apt install -y python3-colcon-common-extensions
-
-#gst
-RUN apt install -y libgstreamer1.0-0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio
-
-# fix map tool
-RUN apt install -y libfreeimage-dev
-
-#install GDB
-RUN apt install -y gdb
-
-#install apriltag
-RUN apt install -y ros-humble-apriltag-msgs
-RUN cd /tmp && git clone https://github.com/AprilRobotics/apriltag.git && cd apriltag && git checkout 3806edf38ac4400153677e510c9f9dcb81f472c8 && cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build --target install
-
-#install can stuff for scout
-RUN apt install -y libasio-dev can-utils
-
-#semantic segmentation
-RUN pip3 install pycuda
+#install pytorch
+RUN pip3 install pip-versions
+RUN pip-versions list torch
+RUN pip3 install torch==2.5.1
+RUN pip3 install torchvision==0.20.1
+RUN pip3 install torchaudio==2.5.1
+RUN /bin/bash -c "export PATH=${PATH}:/usr/local/cuda/bin && export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/cuda/lib64 && pip3 install pycuda==2024.1.2"
+RUN /bin/bash -c "echo 'export PATH=\${PATH}:/usr/local/cuda/bin' >> ~/.bashrc"
+RUN /bin/bash -c "echo 'export LD_LIBRARY_PATH=\${LD_LIBRARY_PATH}:/usr/local/cuda/lib64' >> ~/.bashrc"
 
 #install tensorrt for c++ API
 #see: https://docs.nvidia.com/deeplearning/tensorrt/install-guide/index.html
@@ -109,6 +40,5 @@ RUN python3 -m pip install --upgrade tensorrt
 #install cv2
 #TODO install customized opencv 
 RUN pip3 install opencv-python matplotlib
-WORKDIR /root
 
 CMD ["bash"]
