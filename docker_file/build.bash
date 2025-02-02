@@ -9,15 +9,15 @@ if [[ $image_type == "x64" ]]; then
     read is_cuda
     if [ "$is_cuda" != "${is_cuda#[Yy]}" ] ;then 
         echo "----> Creating x64 image with cuda, the x64 image will be created first"
-        docker build -t dddmr_gtsam:x64 -f Dockerfile_gtsam .
+        docker build -t dddmr_gtsam:x64 -f Dockerfile_gtsam . --no-cache
         echo "----> Starting second layer with CUDA"
-        docker build -t dddmr_gtsam:pytorch2.5.1-cuda12.6-cudnn9-tensorrt10.7 -f Dockerfile_gtsam_cuda .
+        docker build -t dddmr_gtsam:pytorch2.5.1-cuda12.6-cudnn9-tensorrt10.7 -f Dockerfile_gtsam_cuda . --no-cache
     else
         echo "----> Creating x64 image without cuda"
-        docker build -t dddmr_gtsam:x64 -f Dockerfile_gtsam .
+        docker build -t dddmr_gtsam:x64 -f Dockerfile_gtsam . --no-cache
     fi
 else
     echo "----> Creating l4t image"
-    docker build -t dddmr_gtsam:l4t_r36 -f Dockerfile_gtsam_l4t_r36 .
+    docker build -t dddmr_gtsam:l4t_r36 -f Dockerfile_gtsam_l4t_r36 . --no-cache
 fi
 
